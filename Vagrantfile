@@ -29,16 +29,16 @@ SUPPORTED_OS = {
 }
 
 # Defaults for config options defined in CONFIG
-$num_instances = 3
+$num_instances = 1
 $instance_name_prefix = "k8s"
 $vm_gui = false
 $vm_memory = 2048
-$vm_cpus = 1
-$shared_folders = {}
+$vm_cpus = 2
+$shared_folders = { 'temp/docker_rpms' => "/var/cache/yum/x86_64/7/docker-ce/packages" }
 $forwarded_ports = {}
 $subnet = "172.17.8"
-$os = "ubuntu1804"
-$network_plugin = "flannel"
+$os = "centos"
+$network_plugin = "calico"
 # Setting multi_networking to true will install Multus: https://github.com/intel/multus-cni
 $multi_networking = false
 # The first three nodes are etcd servers
@@ -194,6 +194,20 @@ Vagrant.configure("2") do |config|
         "kubectl_localhost": "True",
         "local_path_provisioner_enabled": "#{$local_path_provisioner_enabled}",
         "local_path_provisioner_claim_root": "#{$local_path_provisioner_claim_root}",
+        "cert_manager_enabled": "True",
+        "kube_api_anonymous_auth": "True",
+        "kube_apiserver_node_port_range": "30000-32767",
+        "kube_pods_subnet": "172.31.0.0/16",
+        "kube_service_addresses": "172.16.0.0/16",
+        "skydns_server": "172.16.254.255",
+        "skydns_server_secondary": "172.16.254.255",
+        "kube_proxy_mode": "iptables",
+        "metrics_server_enabled": "True",
+        "helm_enabled": "True",
+        "kube_controller_node_monitor_grace_period": "40s",
+        "kube_controller_node_monitor_period": "5s",
+        "kube_controller_pod_eviction_timeout": "5m0s",
+        "kubelet_status_update_frequency": "10s",
         "ansible_ssh_user": SUPPORTED_OS[$os][:user]
       }
 
